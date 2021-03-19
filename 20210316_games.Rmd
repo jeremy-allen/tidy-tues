@@ -99,7 +99,7 @@ emotions_scored <- name_emotions %>%
 
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
 
 p <- emotions_scored %>% ggplot(aes(x = sentiment, y = valence, fill = sentiment)) +
   geom_bar(stat = "identity", width = 1) +
