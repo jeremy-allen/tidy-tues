@@ -12,9 +12,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
-
+library(wordcloud2)
+library(cowplot)
 library(tidyverse)
 library(tidytext)
+
 
 get_sentiments("nrc")
 
@@ -99,9 +101,61 @@ emotions_scored <- name_emotions %>%
 
 ```
 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+joy_title_words <- name_emotions %>%
+  unnest(emotion_words) %>%
+  select(word, sentiment, freq = n) %>% 
+  filter(sentiment == "joy") %>% 
+  select(-sentiment) %>%
+  group_by(word) %>% 
+  summarise(freq = sum(freq))
+
+sad_title_words <- name_emotions %>%
+  unnest(emotion_words) %>%
+  select(word, sentiment, freq = n) %>% 
+  filter(sentiment == "sadness") %>%
+  select(-sentiment) %>%
+  group_by(word) %>% 
+  summarise(freq = sum(freq))
+
+```
+
+```{r}
+
+# open these in the viewer pane then screenshot and add screenshot to directory
+joy_cloud <- wordcloud2(
+  data = joy_title_words,
+  size = .7,
+  gridSize = 1,
+  color = "#e600e6",
+  backgroundColor = "black",
+  minRotation = 0,
+  maxRotation = 0,
+  rotateRatio = 0,
+  shape = "circle"
+)
+
+sad_cloud <- wordcloud2(
+  data = sad_title_words,
+  size = 1.1,
+  gridSize = 1,
+  color = "#625062",
+  backgroundColor = "black",
+  minRotation = 0,
+  maxRotation = 0,
+  rotateRatio = 0,
+  shape = "circle"
+)
+
+
+```
+
 ```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
 
-p <- emotions_scored %>% ggplot(aes(x = sentiment, y = valence, fill = sentiment)) +
+p <- emotions_scored %>%
+  ggplot(aes(x = sentiment, y = valence, fill = sentiment)) +
   geom_bar(stat = "identity", width = 1) +
   scale_fill_manual(values = c("#e600e6", "#625062"), breaks = c("joy", "sadness")) +
   labs(x = "",
@@ -117,9 +171,10 @@ Reference: Emotions Evoked by Common Words and Phrases: Using Mechanical Turk to
   theme_minimal() +
   theme(
    text = element_text(color = "#cfafcf"),
-   strip.text = element_text(color = "#cfafcf"),
-   plot.title = element_text(size = 22),
-   plot.subtitle = element_text(size = 18, margin = margin(.5,0,3,0, unit = "cm")),
+   strip.text = element_text(size = 12, color = "#cfafcf"),
+   plot.title = element_text(size = 34, margin = margin(0,0,.25,0, unit = "cm")),
+   plot.subtitle = element_text(size = 24, margin = margin(.5,0,4,0, unit = "cm")),
+   plot.caption = element_text(size = 14, margin = margin(24,0,0,0, unit = "cm")),
    legend.box.margin = margin(.25,0,2,0, unit = "cm"),
    legend.position = "top",
    legend.text = element_text(size = 16),
@@ -132,10 +187,14 @@ Reference: Emotions Evoked by Common Words and Phrases: Using Mechanical Turk to
    axis.text.y = element_blank(),
    plot.margin = margin(3,3,.5,3, unit = "cm"),
    plot.background = element_rect(fill = "black"),
-   plot.caption = element_text(size = 10, margin = margin(3,0,0,0, unit = "cm"))
   ) 
 
-ggsave("sad_games.png", plot = p, width = 24, height = 12, units = "in")
+q <- ggdraw(p) +
+ draw_image(here::here("joycloud.png"), x = .125, y = .265, hjust = 0, vjust = 0, width = 0.25, height = 0.15) +
+ draw_image(here::here("sadcloud.png"), x = .48, y = .12, hjust = 0, vjust = 0, width = 0.37, height = 0.37)
+
+ggsave("sad_games.png", plot = q, width = 30, height = 26, units = "in")
 
 ```
+
 
