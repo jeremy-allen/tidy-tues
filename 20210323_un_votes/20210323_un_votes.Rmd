@@ -105,12 +105,17 @@ p <- dat %>%
   plot.margin = margin(2,2,.25,2, unit = "cm"),
   plot.title = element_markdown(face = 'bold', size = 24, hjust = .5),
   plot.title.position = 'plot',
-  plot.subtitle = element_markdown(size = 16, margin = margin(.5,0,2,0, unit = "cm"), hjust = .5),
-  plot.caption = element_markdown(size = 14, hjust = .5, margin = margin(1,0,0,0, unit = "cm")),
+  plot.subtitle = element_markdown(face = 'bold', size = 16, margin = margin(.5,0,2,0, unit = "cm"), hjust = .5),
+  plot.caption = element_markdown(size = 12, hjust = .5, margin = margin(1,0,0,0, unit = "cm")),
   plot.caption.position = 'plot'
  )
  
-ggsave(here::here("20210323_un_votes", "votes.png"), p, device = "png", width = 15, height = 10, units = "in", dpi = 300)
+ggsave(here::here("20210323_un_votes", "votes.png"),
+       p,
+       device = "png",
+       width = 13, height = 8,
+       units = "in", dpi = 300,
+       scale = 1)
 
 ```
 
